@@ -12,7 +12,11 @@
 		<Grid Grid.Column="0" Grid.Row="0">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="Auto"/>
@@ -20,9 +24,11 @@
 
 			<Button Grid.Column="0" Grid.Row="0" x:Name="ButtonFolder" Text="Folder" Clicked="ButtonFolder_Clicked" Margin="5"/>
 			<Label Grid.Column="1" Grid.Row="0" x:Name="LabelPath" Text="" VerticalTextAlignment="Center" Margin="5"/>
-			<Button Grid.Column="2" Grid.Row="0" x:Name="ButtonPrevious" Text="Previous" Clicked="ButtonPrevious_Clicked" Margin="5"/>
-			<Button Grid.Column="3" Grid.Row="0" x:Name="ButtonRandom" Text="Random Image" Clicked="ButtonRandom_Clicked" Margin="5"/>
-			<Button Grid.Column="4" Grid.Row="0" x:Name="ButtonNext" Text="Next" Clicked="ButtonNext_Clicked" Margin="5"/>
+			<BoxView Grid.Column="2" Grid.Row="0" WidthRequest="1" Color="Gray" Margin="10"/>
+			<Label Grid.Column="3" Grid.Row="0" x:Name="LabelImage" Text="" VerticalTextAlignment="Center" Margin="5"/>
+			<Button Grid.Column="4" Grid.Row="0" x:Name="ButtonPrevious" Text="Previous" Clicked="ButtonPrevious_Clicked" Margin="5"/>
+			<Button Grid.Column="5" Grid.Row="0" x:Name="ButtonRandom" Text="Random Image" Clicked="ButtonRandom_Clicked" Margin="5"/>
+			<Button Grid.Column="6" Grid.Row="0" x:Name="ButtonNext" Text="Next" Clicked="ButtonNext_Clicked" Margin="5"/>
 		</Grid>
 		
 		<Image Grid.Column="0" Grid.Row="1" x:Name="Image"/>

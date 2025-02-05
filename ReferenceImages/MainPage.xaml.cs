@@ -1,5 +1,5 @@
-﻿using CommunityToolkit.Maui.Storage;
-using Microsoft.Maui.Graphics.Platform;
+﻿using System.ComponentModel;
+using CommunityToolkit.Maui.Storage;
 
 namespace ReferenceImages;
 
@@ -22,6 +22,17 @@ public partial class MainPage {
 
         LoadLastUsedDirectory();
         LoadLastUsedImage();
+        
+        Settings.Default.PropertyChanged += DefaultOnPropertyChanged;
+    }
+
+    private void DefaultOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if(Application.Current?.Windows[0].Page is { IsLoaded: true} page) page.DisplayAlert("",$"prop changed: {e.PropertyName}", "Blah");
+        if (e.PropertyName is not (nameof(Settings.EnforceProhibitedWordsInPaths) or nameof(Settings.ProhibitedWordsInPaths))) return;
+        imagePaths.Clear();
+        LoadImagePaths();
+        if (!IsValidFile(imageFileInfo)) LoadRandomImage();
     }
 
     private void LoadLastUsedDirectory()
@@ -51,23 +62,53 @@ public partial class MainPage {
         if (!LoadImage(GetFirstImageFile()?.FullName)) DisplayAlert("Error", "No image found", "OK");
     }
 
-    private FileInfo? GetFirstImageFile() => directoryInfo?.EnumerateFileSystemInfos("", SearchOption.AllDirectories).OfType<FileInfo>().FirstOrDefault(info => ValidImageFileExtensions.Contains(info.Extension.Trim('.')));
+    private FileInfo? GetFirstImageFile() => directoryInfo?
+        .EnumerateFileSystemInfos("", SearchOption.AllDirectories)
+        .OfType<FileInfo>()
+        .FirstOrDefault(IsValidFile);
 
     private void LoadImagePaths()
     {
         if (directoryInfo == null || imagePaths.Count > 0) return;
-        imagePaths.AddRange(directoryInfo.EnumerateFileSystemInfos("", SearchOption.AllDirectories).OfType<FileInfo>().Where(info => ValidImageFileExtensions.Contains(info.Extension.Trim('.'))).Select(info => info.FullName));
+        imagePaths.AddRange(directoryInfo
+            .EnumerateFileSystemInfos("", SearchOption.AllDirectories)
+            .OfType<FileInfo>()
+            .Where(IsValidFile)
+            .Select(info => info.FullName)
+        );
+        if (IsLoaded) DisplayAlert("",$"Loaded {imagePaths.Count} paths","Whatever");
+    }
+
+    private void LoadRandomImage()
+    {
+        LoadImagePaths();
+        LoadImage(imageIndex = Random.Shared.Next(0, imagePaths.Count));
+    }
+
+    private bool LoadImage(int index)
+    {
+        if (index < 0 || index >= imagePaths.Count) return false;
+        return LoadImage(imagePaths[index]);
     }
 
     private bool LoadImage (string? path)
     {
         if (path is null) return false;
-        
+
         imageFileInfo = new FileInfo(path);
-        if (imageFileInfo is null || !ValidImageFileExtensions.Contains(imageFileInfo.Extension.Trim('.'))) return false;
+        if (!IsValidFile(imageFileInfo)) return false;
 
         Image.Source = ImageSource.FromFile(imageFileInfo.FullName);
+        LabelImage.Text = Path.GetRelativePath(directoryInfo?.FullName ?? string.Empty, imageFileInfo.FullName);
         Preferences.Set(preferenceKeyImagePath, imageFileInfo.FullName);
+        return true;
+    }
+
+    private static bool IsValidFile(FileInfo? info)
+    {
+        if (info is null || !info.Exists) return false;
+        if (!ValidImageFileExtensions.Contains(info.Extension.Trim('.'))) return false;
+        if (Settings.Default.EnforceProhibitedWordsInPaths && Settings.Default.ProhibitedWordsInPaths.Any(word => info.FullName.Contains(word, StringComparison.CurrentCultureIgnoreCase))) return false;
         return true;
     }
 
@@ -107,15 +148,10 @@ public partial class MainPage {
 
         imageIndex++;
         if (imageIndex > imagePaths.Count - 1) imageIndex = 0;
-        LoadImage(imagePaths[imageIndex]);
+        LoadImage(imageIndex);
     }
 
-    private void ButtonRandom_Clicked(object sender, EventArgs e)
-    {
-        LoadImagePaths();
-        imageIndex = Random.Shared.Next(0, imagePaths.Count);
-        LoadImage(imagePaths[imageIndex]);
-    }
+    private void ButtonRandom_Clicked(object sender, EventArgs e) => LoadRandomImage();
 
     private async Task PickFolderAsync(CancellationToken cancellationToken)
     {

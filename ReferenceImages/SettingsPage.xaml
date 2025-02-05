@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:referenceImages="using:ReferenceImages"
+             x:Class="ReferenceImages.SettingsPage"
+             x:DataType="referenceImages:Settings">
+    
+    <Grid HorizontalOptions="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Column="0" Grid.Row="0" Text="Enforce prohibited words" VerticalOptions="Center" Margin="5"/>
+        <CheckBox Grid.Column="1" Grid.Row="0" IsChecked="{Binding EnforceProhibitedWordsInPaths}" VerticalOptions="Center" Margin="5"/>
+        <Label Grid.Column="0" Grid.Row="1" Text="Prohibited words in path" VerticalOptions="Center" Margin="5"/>
+        <Entry Grid.Column="1" Grid.Row="1" x:Name="EntryProhibitedWords" Text="" Unfocused="EntryProhibitedWords_OnUnfocused" VerticalOptions="Center" Margin="5"/>
+    </Grid>
+    
+</ContentPage>
