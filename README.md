@@ -9,12 +9,14 @@ Photo by <a href="https://unsplash.com/@davidhofmann?utm_content=creditCopyText&
 - Uses all images in the folder (including subfolders)
 - Open a random image inside the folder
 - Open the next/previous image (useful for 360 degree photosets)
+- Sketch timer (opens random image when the time elapses)
 
 ## Settings
+- Sketch timer (time between random images)
+- Always apply word filter on startup
 - Word filter for file paths (to hide photos in 'nude' subfolder for example)
 
 ## Planned features
-- Sketch timer (switch to random image after set amount of time)
 - Folder and Image history
 - Next/Previous image buttons with larger increments (to skim through folder faster)
 
