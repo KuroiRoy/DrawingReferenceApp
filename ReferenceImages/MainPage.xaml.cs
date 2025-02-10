@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel;
 using CommunityToolkit.Maui.Storage;
+using Microsoft.Maui.Platform;
 
 namespace ReferenceImages;
 
-public partial class MainPage {
-
+public partial class MainPage
+{
     private const string preferenceKeyDirectoryPath = nameof(preferenceKeyDirectoryPath);
     private const string preferenceKeyImagePath = nameof(preferenceKeyImagePath);
     private static readonly string[] ValidImageFileExtensions = ["jpeg", "jpg", "png"];
@@ -14,25 +15,48 @@ public partial class MainPage {
     private readonly IFolderPicker folderPicker;
     private readonly List<string> imagePaths = [];
     private int imageIndex = -1;
+    private IDispatcherTimer? timer;
+    private int sketchTimeLeft;
 
-    public MainPage (IFolderPicker folderPicker) {
+    public MainPage(IFolderPicker folderPicker)
+    {
         InitializeComponent();
-
         this.folderPicker = folderPicker;
 
-        LoadLastUsedDirectory();
-        LoadLastUsedImage();
-        
-        Settings.Default.PropertyChanged += DefaultOnPropertyChanged;
+        Loaded += (_, _) =>
+        {
+            LoadLastUsedDirectory();
+            LoadLastUsedImage();
+
+            Settings.Default.PropertyChanged += SettingsOnPropertyChanged;
+            timer = Application.Current?.Dispatcher.CreateTimer();
+            if (timer == null) return;
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.IsRepeating = true;
+            timer.Tick += TimerOnTick;
+            sketchTimeLeft = Settings.Default.SketchTimeInSeconds;
+            UpdateLabelSketchTimeLeft();
+        };
     }
 
-    private void DefaultOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if(Application.Current?.Windows[0].Page is { IsLoaded: true} page) page.DisplayAlert("",$"prop changed: {e.PropertyName}", "Blah");
-        if (e.PropertyName is not (nameof(Settings.EnforceProhibitedWordsInPaths) or nameof(Settings.ProhibitedWordsInPaths))) return;
-        imagePaths.Clear();
-        LoadImagePaths();
-        if (!IsValidFile(imageFileInfo)) LoadRandomImage();
+        switch (e.PropertyName)
+        {
+            case nameof(Settings.EnforceProhibitedWordsInPaths) or nameof(Settings.ProhibitedWordsInPaths):
+            {
+                imagePaths.Clear();
+                LoadImagePaths();
+                if (!IsValidFile(imageFileInfo)) LoadRandomImage();
+                break;
+            }
+            case nameof(Settings.SketchTimerMinutes) or nameof(Settings.SketchTimerSeconds):
+            {
+                sketchTimeLeft = Settings.Default.SketchTimeInSeconds;
+                UpdateLabelSketchTimeLeft();
+                break;
+            }
+        }
     }
 
     private void LoadLastUsedDirectory()
@@ -59,7 +83,7 @@ public partial class MainPage {
         if (path is not "" && LoadImage(path)) return;
         if (directoryInfo is null) return;
 
-        if (!LoadImage(GetFirstImageFile()?.FullName)) DisplayAlert("Error", "No image found", "OK");
+        if (!LoadImage(GetFirstImageFile()?.FullName)) Helper.DisplayAlert("No image found");
     }
 
     private FileInfo? GetFirstImageFile() => directoryInfo?
@@ -76,7 +100,6 @@ public partial class MainPage {
             .Where(IsValidFile)
             .Select(info => info.FullName)
         );
-        if (IsLoaded) DisplayAlert("",$"Loaded {imagePaths.Count} paths","Whatever");
     }
 
     private void LoadRandomImage()
@@ -91,7 +114,7 @@ public partial class MainPage {
         return LoadImage(imagePaths[index]);
     }
 
-    private bool LoadImage (string? path)
+    private bool LoadImage(string? path)
     {
         if (path is null) return false;
 
@@ -101,6 +124,8 @@ public partial class MainPage {
         Image.Source = ImageSource.FromFile(imageFileInfo.FullName);
         LabelImage.Text = Path.GetRelativePath(directoryInfo?.FullName ?? string.Empty, imageFileInfo.FullName);
         Preferences.Set(preferenceKeyImagePath, imageFileInfo.FullName);
+        sketchTimeLeft = Settings.Default.SketchTimeInSeconds;
+        UpdateLabelSketchTimeLeft();
         return true;
     }
 
@@ -108,7 +133,8 @@ public partial class MainPage {
     {
         if (info is null || !info.Exists) return false;
         if (!ValidImageFileExtensions.Contains(info.Extension.Trim('.'))) return false;
-        if (Settings.Default.EnforceProhibitedWordsInPaths && Settings.Default.ProhibitedWordsInPaths.Any(word => info.FullName.Contains(word, StringComparison.CurrentCultureIgnoreCase))) return false;
+        if (Settings.Default.EnforceProhibitedWordsInPaths &&
+            Settings.Default.ProhibitedWordsInPaths.Any(word => info.FullName.Contains(word, StringComparison.CurrentCultureIgnoreCase))) return false;
         return true;
     }
 
@@ -125,7 +151,7 @@ public partial class MainPage {
         {
             imageFileInfo ??= GetFirstImageFile();
             if (imageFileInfo is null) return;
-            
+
             imageIndex = imagePaths.IndexOf(imageFileInfo.FullName);
         }
 
@@ -142,7 +168,7 @@ public partial class MainPage {
         {
             imageFileInfo ??= GetFirstImageFile();
             if (imageFileInfo is null) return;
-            
+
             imageIndex = imagePaths.IndexOf(imageFileInfo.FullName);
         }
 
@@ -153,17 +179,18 @@ public partial class MainPage {
 
     private void ButtonRandom_Clicked(object sender, EventArgs e) => LoadRandomImage();
 
+    private async void ButtonSettings_OnClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"///{nameof(SettingsPage)}");
+
     private async Task PickFolderAsync(CancellationToken cancellationToken)
     {
         var result = await folderPicker.PickAsync(cancellationToken);
         if (result is { IsSuccessful: true, Folder.Path: not null })
         {
             LoadDirectory(result.Folder.Path);
-            if (!IsSubdirectory(directoryInfo, imageFileInfo?.Directory)) LoadImage(GetFirstImageFile()?.FullName); 
+            if (!IsSubdirectory(directoryInfo, imageFileInfo?.Directory)) LoadImage(GetFirstImageFile()?.FullName);
         }
-        else await DisplayAlert("Error", result.Exception?.Message, "OK");
     }
-    
+
     private static bool IsSubdirectory(DirectoryInfo? parent, DirectoryInfo? child)
     {
         if (parent is null || child is null) return false;
@@ -171,5 +198,34 @@ public partial class MainPage {
         var childPath = child.FullName.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
 
         return childPath.StartsWith(parentPath, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void ButtonTimerStart_OnClicked(object? sender, EventArgs e)
+    {
+        timer?.Start();
+        ButtonTimerStart.IsVisible = false;
+        ButtonTimerPause.IsVisible = true;
+    }
+
+    private void ButtonTimerPause_OnClicked(object? sender, EventArgs e)
+    {
+        timer?.Stop();
+        ButtonTimerPause.IsVisible = false;
+        ButtonTimerStart.IsVisible = true;
+    }
+
+    private void TimerOnTick(object? sender, EventArgs e)
+    {
+        sketchTimeLeft--;
+        UpdateLabelSketchTimeLeft();
+        if (sketchTimeLeft > 0) return;
+        
+        LoadRandomImage();
+    }
+
+    private void UpdateLabelSketchTimeLeft()
+    {
+        var timeLeft = TimeSpan.FromSeconds(sketchTimeLeft);
+        LabelSketchTimeLeft.Text = $"{timeLeft.Minutes}m {timeLeft.Seconds}s";
     }
 }

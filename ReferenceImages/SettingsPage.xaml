@@ -2,23 +2,64 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:referenceImages="using:ReferenceImages"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="ReferenceImages.SettingsPage"
              x:DataType="referenceImages:Settings">
     
-    <Grid HorizontalOptions="Center">
+    <ContentPage.Resources>
+        <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Red" />
+        </Style>
+    </ContentPage.Resources>
+    
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        
+        <Button Grid.Column="0" Grid.Row="0" Text="&#xeb77;" ToolTipProperties.Text="Close the settings page"  Clicked="BackButton_OnClicked" HorizontalOptions="End" Margin="5" FontFamily="Icons" FontSize="20"/>
+        
+        <Grid Grid.Column="0" Grid.Row="1" HorizontalOptions="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <Label Grid.Column="0" Grid.Row="0" Text="Enforce prohibited words" VerticalOptions="Center" Margin="5"/>
-        <CheckBox Grid.Column="1" Grid.Row="0" IsChecked="{Binding EnforceProhibitedWordsInPaths}" VerticalOptions="Center" Margin="5"/>
-        <Label Grid.Column="0" Grid.Row="1" Text="Prohibited words in path" VerticalOptions="Center" Margin="5"/>
-        <Entry Grid.Column="1" Grid.Row="1" x:Name="EntryProhibitedWords" Text="" Unfocused="EntryProhibitedWords_OnUnfocused" VerticalOptions="Center" Margin="5"/>
+            <Label Grid.Column="0" Grid.Row="0" Text="Sketch timer length" VerticalOptions="Center" Margin="5"/>
+            <HorizontalStackLayout Grid.Column="1" Grid.Row="0">
+                <Label Text="minutes:" Margin="5" VerticalOptions="Center"/>
+                <Entry Keyboard="Numeric" Text="{Binding SketchTimerMinutes}">
+                    <Entry.Behaviors>
+                        <toolkit:NumericValidationBehavior MinimumValue="0.0" MaximumValue="999.0" MaximumDecimalPlaces="0" InvalidStyle="{StaticResource InvalidEntryStyle}" Flags="ValidateOnValueChanged" />
+                    </Entry.Behaviors>
+                </Entry>
+                <Label Text="seconds:" Margin="5" VerticalOptions="Center"/>
+                <Entry Keyboard="Numeric" Text="{Binding SketchTimerSeconds}">
+                    <Entry.Behaviors>
+                        <toolkit:NumericValidationBehavior MinimumValue="0.0" MaximumValue="60.0" MaximumDecimalPlaces="0" InvalidStyle="{StaticResource InvalidEntryStyle}" Flags="ValidateOnValueChanged" />
+                    </Entry.Behaviors>
+                </Entry>
+            </HorizontalStackLayout>
+            
+            <Label    Grid.Column="0" Grid.Row="1" Text="Always enforce prohibited words on startup" VerticalOptions="Center" Margin="5"/>
+            <CheckBox Grid.Column="1" Grid.Row="1" IsChecked="{Binding AlwaysEnforceProhibitedWordsOnStartup}" VerticalOptions="Center" Margin="5"/>
+            <Label    Grid.Column="0" Grid.Row="2" Text="Enforce prohibited words" VerticalOptions="Center" Margin="5"/>
+            <CheckBox Grid.Column="1" Grid.Row="2" IsChecked="{Binding EnforceProhibitedWordsInPaths}" VerticalOptions="Center" Margin="5"/>
+            <Label    Grid.Column="0" Grid.Row="3" Text="Prohibited words in path" VerticalOptions="Center" Margin="5"/>
+            <Entry    Grid.Column="1" Grid.Row="3" x:Name="EntryProhibitedWords" Unfocused="EntryProhibitedWords_OnUnfocused" VerticalOptions="Center" Margin="5"/>
+        </Grid>
     </Grid>
+    
     
 </ContentPage>
