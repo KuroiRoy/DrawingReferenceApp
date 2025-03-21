@@ -81,7 +81,7 @@ public partial class MainPage
     {
         var path = Preferences.Get(preferenceKeyImagePath, string.Empty);
         if (path is not "" && LoadImage(path)) return;
-        if (directoryInfo is null) return;
+        if (directoryInfo is not { Exists: true }) return;
 
         if (!LoadImage(GetFirstImageFile()?.FullName)) Helper.DisplayAlert("No image found");
     }
@@ -93,7 +93,7 @@ public partial class MainPage
 
     private void LoadImagePaths()
     {
-        if (directoryInfo == null || imagePaths.Count > 0) return;
+        if (directoryInfo is not { Exists:true } || imagePaths.Count > 0) return;
         imagePaths.AddRange(directoryInfo
             .EnumerateFileSystemInfos("", SearchOption.AllDirectories)
             .OfType<FileInfo>()

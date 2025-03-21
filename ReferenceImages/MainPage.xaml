@@ -1,48 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:referenceImages="clr-namespace:ReferenceImages"
              x:Class="ReferenceImages.MainPage">
 
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
+   <ContentPage.Resources>
+      <ResourceDictionary>
+         <ControlTemplate x:Key="PortraitTemplate">
+            <referenceImages:MainPagePortrait/>
+         </ControlTemplate>
+         <ControlTemplate x:Key="LandscapeTemplate">
+            <referenceImages:MainPageLandscape/>
+         </ControlTemplate>
+      </ResourceDictionary>
+   </ContentPage.Resources>
 
-		<Grid Grid.Column="0" Grid.Row="0">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-			</Grid.ColumnDefinitions>
+   <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup>
+         <!-- Portrait Mode -->
+         <VisualState x:Name="Portrait">
+            <VisualState.StateTriggers>
+               <OrientationStateTrigger Orientation="Portrait" />
+            </VisualState.StateTriggers>
+            <VisualState.Setters>
+               <Setter Property="ContentTemplate" Value="{StaticResource PortraitTemplate}" />
+            </VisualState.Setters>
+         </VisualState>
 
-			<Button Grid.Column="0" Grid.Row="0" x:Name="ButtonFolder" Text="&#xeaad;" ToolTipProperties.Text="Select Folder" Clicked="ButtonFolder_Clicked" Margin="5" FontFamily="Icons" FontSize="20"/>
-			<Label Grid.Column="1" Grid.Row="0" x:Name="LabelPath" Text="" VerticalTextAlignment="Center" Margin="5"/>
-			<BoxView Grid.Column="2" Grid.Row="0" WidthRequest="1" Color="Gray" Margin="10"/>
-			<Label Grid.Column="3" Grid.Row="0" x:Name="LabelImage" Text="" VerticalTextAlignment="Center" Margin="5"/>
-			<Button Grid.Column="4" Grid.Row="0" x:Name="ButtonPrevious" Text="&#xea60;" ToolTipProperties.Text="Go to previous image" Clicked="ButtonPrevious_Clicked" Margin="5" FontFamily="Icons" FontSize="20"/>
-			<Button Grid.Column="5" Grid.Row="0" x:Name="ButtonRandom" Text="&#xf095;&#xeb0a;" ToolTipProperties.Text="Go to a random image" Clicked="ButtonRandom_Clicked" Margin="5" FontFamily="Icons" FontSize="20"/>
-			<Button Grid.Column="6" Grid.Row="0" x:Name="ButtonNext" Text="&#xea61;" ToolTipProperties.Text="Go to next image" Clicked="ButtonNext_Clicked" Margin="5" FontFamily="Icons" FontSize="20"/>
-			<BoxView Grid.Column="7" Grid.Row="0" WidthRequest="1" Color="Gray" Margin="10"/>
-			<Label Grid.Column="8" Grid.Row="0" Text="&#xea70;" Margin="5" FontFamily="Icons" FontSize="20" VerticalOptions="Center"/>
-			<Label Grid.Column="9" Grid.Row="0" x:Name="LabelSketchTimeLeft" Margin="5" VerticalOptions="Center"/>
-			<Button Grid.Column="10" Grid.Row="0" x:Name="ButtonTimerStart" Text="&#xed46;" ToolTipProperties.Text="Start the sketch timer" Clicked="ButtonTimerStart_OnClicked" Margin="5" FontFamily="Icons" FontSize="20"/>
-			<Button Grid.Column="10" Grid.Row="0" x:Name="ButtonTimerPause" Text="&#xed45;" ToolTipProperties.Text="Pause the sketch timer" Clicked="ButtonTimerPause_OnClicked" IsVisible="False" Margin="5" FontFamily="Icons" FontSize="20"/>
-			<BoxView Grid.Column="11" Grid.Row="0" WidthRequest="1" Color="Gray" Margin="10"/>
-			<Button Grid.Column="12" Grid.Row="0" x:Name="ButtonSettings" Text="&#xeb20;" ToolTipProperties.Text="Open the Settings page" Clicked="ButtonSettings_OnClicked" Margin="5" FontFamily="Icons" FontSize="20"/>
-		</Grid>
-		
-		<Image Grid.Column="0" Grid.Row="1" x:Name="Image"/>
-	</Grid>
+         <!-- Landscape Mode -->
+         <VisualState x:Name="Landscape">
+            <VisualState.StateTriggers>
+               <OrientationStateTrigger Orientation="Landscape" />
+            </VisualState.StateTriggers>
+            <VisualState.Setters>
+               <Setter Property="ContentTemplate" Value="{StaticResource LandscapeTemplate}" />
+            </VisualState.Setters>
+         </VisualState>
+      </VisualStateGroup>
+   </VisualStateManager.VisualStateGroups>
 
+   <ContentView ControlTemplate="{StaticResource LandscapeTemplate}"/>
 </ContentPage>

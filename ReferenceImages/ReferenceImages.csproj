@@ -72,4 +72,22 @@
       <PackageReference Include="WinUIEx" Version="2.5.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="MainPageLandscape.xaml.cs">
+        <DependentUpon>MainPageLandscape.xaml</DependentUpon>
+      </Compile>
+      <Compile Update="MainPagePortrait.xaml.cs">
+        <DependentUpon>MainPagePortrait.xaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiXaml Update="MainPageLandscape.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="MainPagePortrait.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+    </ItemGroup>
+
 </Project>
