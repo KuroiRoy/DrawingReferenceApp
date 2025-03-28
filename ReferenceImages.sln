@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReferenceImages", "ReferenceImages\ReferenceImages.csproj", "{1EAAC5DE-D7EC-4F4A-925D-DD86F0DCB0CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageServer", "ImageServer\ImageServer.csproj", "{B64C0A82-613D-4CD3-82EA-A367696C9BD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{1EAAC5DE-D7EC-4F4A-925D-DD86F0DCB0CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EAAC5DE-D7EC-4F4A-925D-DD86F0DCB0CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EAAC5DE-D7EC-4F4A-925D-DD86F0DCB0CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B64C0A82-613D-4CD3-82EA-A367696C9BD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B64C0A82-613D-4CD3-82EA-A367696C9BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B64C0A82-613D-4CD3-82EA-A367696C9BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B64C0A82-613D-4CD3-82EA-A367696C9BD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
