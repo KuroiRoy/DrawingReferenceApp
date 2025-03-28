@@ -1,6 +1,0 @@
-@ImageServer_HostAddress = http://0.0.0.0:5083
-
-GET {{ImageServer_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
