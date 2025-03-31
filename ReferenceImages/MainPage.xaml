@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:referenceImages="clr-namespace:ReferenceImages"
+             xmlns:local="clr-namespace:ReferenceImages"
              x:Class="ReferenceImages.MainPage">
 
    <ContentPage.Resources>
       <ResourceDictionary>
          <ControlTemplate x:Key="PortraitTemplate">
-            <referenceImages:MainPagePortrait/>
+            <local:MainPagePortrait BindingContext="{Binding Source={RelativeSource TemplatedParent}, Path=BindingContext}"/>
          </ControlTemplate>
          <ControlTemplate x:Key="LandscapeTemplate">
-            <referenceImages:MainPageLandscape/>
+            <local:MainPageLandscape BindingContext="{Binding Source={RelativeSource TemplatedParent}, Path=BindingContext}"/>
          </ControlTemplate>
       </ResourceDictionary>
    </ContentPage.Resources>
@@ -23,7 +23,7 @@
                <OrientationStateTrigger Orientation="Portrait" />
             </VisualState.StateTriggers>
             <VisualState.Setters>
-               <Setter Property="ContentTemplate" Value="{StaticResource PortraitTemplate}" />
+               <Setter Property="ControlTemplate" Value="{StaticResource PortraitTemplate}" />
             </VisualState.Setters>
          </VisualState>
 
@@ -33,7 +33,7 @@
                <OrientationStateTrigger Orientation="Landscape" />
             </VisualState.StateTriggers>
             <VisualState.Setters>
-               <Setter Property="ContentTemplate" Value="{StaticResource LandscapeTemplate}" />
+               <Setter Property="ControlTemplate" Value="{StaticResource LandscapeTemplate}" />
             </VisualState.Setters>
          </VisualState>
       </VisualStateGroup>

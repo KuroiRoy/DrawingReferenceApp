@@ -2,7 +2,10 @@
 
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ReferenceImages.MainPageLandscape">
+             xmlns:local="clr-namespace:ReferenceImages"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ReferenceImages.MainPageLandscape"
+             x:DataType="local:MainPageViewModel">
 
    <Grid>
       <Grid.RowDefinitions>
@@ -27,23 +30,23 @@
             <ColumnDefinition Width="Auto"/>
          </Grid.ColumnDefinitions>
 
-         <Button Grid.Column="0" Grid.Row="0" x:Name="ButtonFolder" Text="&#xeaad;" ToolTipProperties.Text="Select Folder" Clicked="ButtonFolder_Clicked" Margin="5" FontFamily="Icons" FontSize="20"/>
-         <Label Grid.Column="1" Grid.Row="0" x:Name="LabelPath" Text="" VerticalTextAlignment="Center" Margin="5"/>
+         <Button Grid.Column="0" Grid.Row="0" Text="&#xeaad;" ToolTipProperties.Text="Select Folder" Command="{Binding OpenFolderPickerCommand}" Margin="5" FontFamily="Icons" FontSize="20"/>
+         <Label Grid.Column="1" Grid.Row="0" Text="{Binding FolderPath}" VerticalTextAlignment="Center" Margin="5"/>
          <BoxView Grid.Column="2" Grid.Row="0" WidthRequest="1" Color="Gray" Margin="10"/>
-         <Label Grid.Column="3" Grid.Row="0" x:Name="LabelImage" Text="" VerticalTextAlignment="Center" Margin="5"/>
-         <Button Grid.Column="4" Grid.Row="0" x:Name="ButtonPrevious" Text="&#xea60;" ToolTipProperties.Text="Go to previous image" Clicked="ButtonPrevious_Clicked" Margin="5" FontFamily="Icons" FontSize="20"/>
-         <Button Grid.Column="5" Grid.Row="0" x:Name="ButtonRandom" Text="&#xf095;&#xeb0a;" ToolTipProperties.Text="Go to a random image" Clicked="ButtonRandom_Clicked" Margin="5" FontFamily="Icons" FontSize="20"/>
-         <Button Grid.Column="6" Grid.Row="0" x:Name="ButtonNext" Text="&#xea61;" ToolTipProperties.Text="Go to next image" Clicked="ButtonNext_Clicked" Margin="5" FontFamily="Icons" FontSize="20"/>
+         <Label Grid.Column="3" Grid.Row="0" Text="{Binding ImagePath}" VerticalTextAlignment="Center" Margin="5"/>
+         <Button Grid.Column="4" Grid.Row="0" Text="&#xea60;" ToolTipProperties.Text="Go to previous image" Command="{Binding LoadPreviousImageCommand}" Margin="5" FontFamily="Icons" FontSize="20"/>
+         <Button Grid.Column="5" Grid.Row="0" Text="&#xf095;&#xeb0a;" ToolTipProperties.Text="Go to a random image" Command="{Binding LoadRandomImageCommand}" Margin="5" FontFamily="Icons" FontSize="20"/>
+         <Button Grid.Column="6" Grid.Row="0" Text="&#xea61;" ToolTipProperties.Text="Go to next image" Command="{Binding LoadNextImageCommand}" Margin="5" FontFamily="Icons" FontSize="20"/>
          <BoxView Grid.Column="7" Grid.Row="0" WidthRequest="1" Color="Gray" Margin="10"/>
          <Label Grid.Column="8" Grid.Row="0" Text="&#xea70;" Margin="5" FontFamily="Icons" FontSize="20" VerticalOptions="Center"/>
-         <Label Grid.Column="9" Grid.Row="0" x:Name="LabelSketchTimeLeft" Margin="5" VerticalOptions="Center"/>
-         <Button Grid.Column="10" Grid.Row="0" x:Name="ButtonTimerStart" Text="&#xed46;" ToolTipProperties.Text="Start the sketch timer" Clicked="ButtonTimerStart_OnClicked" Margin="5" FontFamily="Icons" FontSize="20"/>
-         <Button Grid.Column="10" Grid.Row="0" x:Name="ButtonTimerPause" Text="&#xed45;" ToolTipProperties.Text="Pause the sketch timer" Clicked="ButtonTimerPause_OnClicked" IsVisible="False" Margin="5" FontFamily="Icons" FontSize="20"/>
+         <Label Grid.Column="9" Grid.Row="0" Text="{Binding SketchTimeLeftString}" Margin="5" VerticalOptions="Center"/>
+         <Button Grid.Column="10" Grid.Row="0" Text="&#xed46;" ToolTipProperties.Text="Start the sketch timer" Command="{Binding StartTimerCommand}" IsVisible="{Binding IsTimerRunning, Converter={toolkit:InvertedBoolConverter}}" Margin="5" FontFamily="Icons" FontSize="20"/>
+         <Button Grid.Column="10" Grid.Row="0" Text="&#xed45;" ToolTipProperties.Text="Pause the sketch timer" Command="{Binding StopTimerCommand}" IsVisible="{Binding IsTimerRunning}" Margin="5" FontFamily="Icons" FontSize="20"/>
          <BoxView Grid.Column="11" Grid.Row="0" WidthRequest="1" Color="Gray" Margin="10"/>
-         <Button Grid.Column="12" Grid.Row="0" x:Name="ButtonSettings" Text="&#xeb20;" ToolTipProperties.Text="Open the Settings page" Clicked="ButtonSettings_OnClicked" Margin="5" FontFamily="Icons" FontSize="20"/>
+         <Button Grid.Column="12" Grid.Row="0" Text="&#xeb20;" ToolTipProperties.Text="Open the Settings page" Command="{Binding OpenSettingsPageCommand}" Margin="5" FontFamily="Icons" FontSize="20"/>
       </Grid>
 
-      <Image Grid.Column="0" Grid.Row="1" x:Name="Image"/>
+      <Image Grid.Column="0" Grid.Row="1" Source="{Binding Image}"/>
    </Grid>
 
 </ContentView>

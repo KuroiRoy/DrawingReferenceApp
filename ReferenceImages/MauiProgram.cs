@@ -45,6 +45,7 @@ public static class MauiProgram {
         builder.Services.AddSingleton(FolderPicker.Default);
         builder.Services.AddSingleton(Settings.Default);
         builder.Services.AddSingleton<SettingsPage>();
+        builder.Services.AddSingleton<MainPageViewModel>();
 
         return builder.Build();
     }

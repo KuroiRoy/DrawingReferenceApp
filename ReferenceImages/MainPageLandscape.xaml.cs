@@ -2,5 +2,7 @@
 
 public partial class MainPageLandscape
 {
-   public MainPageLandscape() => InitializeComponent();
+   public MainPageLandscape() {
+      InitializeComponent();
+   }
 }
