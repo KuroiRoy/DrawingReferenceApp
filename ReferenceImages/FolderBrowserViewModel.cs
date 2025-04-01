@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using CommunityToolkit.Maui.Storage;
+﻿using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.Input;
 
 namespace ReferenceImages;
@@ -48,6 +47,9 @@ public partial class FolderBrowserViewModel : BaseViewModel {
     }
 
     private async Task LoadFoldersAsync(string path, CancellationToken cancellationToken) {
+        var pathExists = await fileService.GetPathExists(path, cancellationToken);
+        if (!pathExists) path = string.Empty;
+        
         var folders = await fileService.GetFoldersAsync(path, cancellationToken);
         Items.ReplaceRange(folders.Select(folder => new FileBrowserItem { Icon = "", IsDirectory = true, Name = folder }));
     }

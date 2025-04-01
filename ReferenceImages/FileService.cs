@@ -31,6 +31,28 @@ public class FileService {
         };
     }
 
+    public async Task<bool> GetPathExists(string path, CancellationToken cancellationToken) {
+        var url = $"{Settings.Default.NetworkFileServerUrl}/api/files/exist?path={WebUtility.UrlEncode(path)}";
+        try {
+            var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url), cancellationToken);
+            if (response.StatusCode != HttpStatusCode.BadRequest) return response.StatusCode == HttpStatusCode.OK;
+            
+            Helper.DisplayAlert($"Failed to get if path exists:\n{response.Content}\nUrl: {url}");
+            return false;
+        }
+        catch (HttpRequestException httpRequestException) {
+            Helper.DisplayAlert($"Failed to pick folder:\n{httpRequestException.Message}\nUrl: {url}");
+            return false;
+        }
+        catch (InvalidOperationException invalidOperationException) {
+            Helper.DisplayAlert($"Failed to pick folder:\n{invalidOperationException.Message}\nUrl: {url}");
+            return false;
+        }
+        catch (OperationCanceledException) {
+            return false;
+        }
+    }
+
     public async Task<List<string>> GetFoldersAsync(string path, CancellationToken cancellationToken) {
         var url = $"{Settings.Default.NetworkFileServerUrl}/api/files/list?path={WebUtility.UrlEncode(path)}&folders=1&files=0";
         try {

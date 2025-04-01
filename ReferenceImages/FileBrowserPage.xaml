@@ -20,7 +20,7 @@
                FontAttributes="Bold"/>
         
         <!-- File/folder list -->
-        <CollectionView x:Name="ItemsCollectionView" Grid.Row="1" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Items}" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="local:FileBrowserItem">
                     <Grid Padding="10">
