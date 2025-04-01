@@ -41,11 +41,11 @@ public class FileService {
             return false;
         }
         catch (HttpRequestException httpRequestException) {
-            Helper.DisplayAlert($"Failed to pick folder:\n{httpRequestException.Message}\nUrl: {url}");
+            Helper.DisplayAlert($"Failed to get if path exists:\n{httpRequestException.Message}\nUrl: {url}");
             return false;
         }
         catch (InvalidOperationException invalidOperationException) {
-            Helper.DisplayAlert($"Failed to pick folder:\n{invalidOperationException.Message}\nUrl: {url}");
+            Helper.DisplayAlert($"Failed to get if path exists:\n{invalidOperationException.Message}\nUrl: {url}");
             return false;
         }
         catch (OperationCanceledException) {
@@ -53,26 +53,21 @@ public class FileService {
         }
     }
 
-    public async Task<List<string>> GetFoldersAsync(string path, CancellationToken cancellationToken) {
-        var url = $"{Settings.Default.NetworkFileServerUrl}/api/files/list?path={WebUtility.UrlEncode(path)}&folders=1&files=0";
+    public async Task<FileListResponse?> GetFoldersAsync(string path, CancellationToken cancellationToken) {
+        var url = $"{Settings.Default.NetworkFileServerUrl}/api/files/list?path={WebUtility.UrlEncode(path)}&folders=true&files=false";
         try {
-            var response = await httpClient.GetFromJsonAsync<FileListResponse>(url, cancellationToken);
-            return response?.Folders ?? [];
+            return await httpClient.GetFromJsonAsync<FileListResponse>(url, cancellationToken);
         }
         catch (HttpRequestException httpRequestException) {
-            var message = $"Failed to pick folder:\n{httpRequestException.Message}\nUrl: {url}";
-            Trace.WriteLine(message);
-            Helper.DisplayAlert(message);
-            return [];
+            Helper.DisplayAlert($"Failed to pick folder:\n{httpRequestException}\nUrl: {url}");
+            return null;
         }
         catch (InvalidOperationException invalidOperationException) {
-            var message = $"Failed to pick folder:\n{invalidOperationException.Message}\nUrl: {url}";
-            Trace.WriteLine(message);
-            Helper.DisplayAlert(message);
-            return [];
+            Helper.DisplayAlert($"Failed to pick folder:\n{invalidOperationException.Message}\nUrl: {url}");
+            return null;
         }
         catch (OperationCanceledException) {
-            return [];
+            return null;
         }
     }
 

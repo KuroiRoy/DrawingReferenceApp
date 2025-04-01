@@ -14,33 +14,34 @@
         </Grid.RowDefinitions>
         
         <!-- Path breadcrumb -->
-        <Label x:Name="PathLabel" 
-               Grid.Row="0"
-               Margin="10"
-               FontAttributes="Bold"/>
+        <Label Grid.Row="0" Text="{Binding FolderPath}" Margin="5"/>
         
         <!-- File/folder list -->
         <CollectionView Grid.Row="1" ItemsSource="{Binding Items}" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="local:FileBrowserItem">
-                    <Grid Padding="10">
+                    <Grid Padding="5">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenFolderCommand, x:DataType={x:Type local:FolderBrowserViewModel}, Source={RelativeSource AncestorType={x:Type local:FolderBrowserViewModel}}}" CommandParameter="{Binding}"/>
+                        </Grid.GestureRecognizers>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         
-                        <Image Source="{Binding Icon}"
-                               WidthRequest="24"
-                               HeightRequest="24"/>
-                               
-                        <Label Text="{Binding Name}"
-                               Grid.Column="1"
-                               VerticalOptions="Center"/>
+                        <Label Grid.Column="0" Text="{Binding Icon}" FontFamily="Icons" FontSize="20" VerticalOptions="Center" WidthRequest="24" HeightRequest="24"/>
+                        <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center"/>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
         
+        <!-- Loader -->
+        <Border Grid.Row="1" BackgroundColor="Gray" IsVisible="{Binding IsLoading}">
+            <Label Text="&#xf146;" FontFamily="Icons" FontSize="40" VerticalOptions="Center" HorizontalOptions="Center"/>
+        </Border>
+        
+        <!-- Buttons -->
         <HorizontalStackLayout Grid.Row="2">
             <Button Text="Select Folder" Command="{Binding SelectFolderCommand}" Margin="5"/>
             <Button Text="Cancel" Command="{Binding CancelCommand}" Margin="5"/>
