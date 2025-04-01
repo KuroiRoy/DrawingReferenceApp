@@ -1,3 +1,4 @@
+using Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -18,19 +19,27 @@ public class FileController : ControllerBase
         // Ensure directory exists or create it
         if (!Directory.Exists(this.settings.ImagesRootFolder)) logger.LogError("Image folder not found: {Folder}", this.settings.ImagesRootFolder);
     }
+    
+    [HttpGet("exist")]
+    public IActionResult Exists([FromQuery] string path = "")
+    {
+        if (Path.IsPathRooted(path)) ValidationProblem("Only relative paths supported.");
+
+        var fullPath = Path.Combine(settings.ImagesRootFolder, path);
+        return Directory.Exists(fullPath) ? Ok() : NotFound();
+    }
 
     [HttpGet("list")]
-    public IActionResult ListFiles([FromQuery] string path = "")
+    public IActionResult ListFiles([FromQuery] string path = "", [FromQuery] bool folders = true, [FromQuery] bool files = true)
     {
         var fullPath = Path.Combine(settings.ImagesRootFolder, path);
+        if (!Directory.Exists(fullPath)) return NotFound();
 
-        if (!Directory.Exists(fullPath))
-            return NotFound();
-
-        var result = new
+        var result = new FileListResponse
         {
-            Directories = Directory.GetDirectories(fullPath).Select(p => Path.GetRelativePath(settings.ImagesRootFolder, p)),
-            Files = Directory.GetFiles(fullPath).Select(p => Path.GetRelativePath(settings.ImagesRootFolder, p))
+            Path = path,
+            Folders = !folders ? [] : Directory.GetDirectories(fullPath).Select(p => Path.GetRelativePath(settings.ImagesRootFolder, p)).ToList(),
+            Files = !files ? [] : Directory.GetFiles(fullPath).Select(p => Path.GetRelativePath(settings.ImagesRootFolder, p)).ToList()
         };
 
         return Ok(result);
