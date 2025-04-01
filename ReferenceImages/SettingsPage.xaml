@@ -34,6 +34,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Label Grid.Column="0" Grid.Row="0" Text="Sketch timer length" VerticalOptions="Center" Margin="5"/>
@@ -58,6 +59,8 @@
             <CheckBox Grid.Column="1" Grid.Row="2" IsChecked="{Binding EnforceProhibitedWordsInPaths}" VerticalOptions="Center" Margin="5"/>
             <Label    Grid.Column="0" Grid.Row="3" Text="Prohibited words in path" VerticalOptions="Center" Margin="5"/>
             <Entry    Grid.Column="1" Grid.Row="3" x:Name="EntryProhibitedWords" Unfocused="EntryProhibitedWords_OnUnfocused" VerticalOptions="Center" Margin="5"/>
+            <Label    Grid.Column="0" Grid.Row="4" Text="Network File Server Address" VerticalOptions="Center" Margin="5"/>
+            <Entry    Grid.Column="1" Grid.Row="4" Text="{Binding NetworkFileServerUrl}" VerticalOptions="Center" Margin="5"/>
         </Grid>
     </Grid>
     

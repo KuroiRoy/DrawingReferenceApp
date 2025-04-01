@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.Input;
 
 namespace ReferenceImages;
@@ -11,7 +10,7 @@ public partial class MainPageViewModel : BaseViewModel {
 
     private FileInfo? imageFileInfo;
     private DirectoryInfo? directoryInfo;
-    private readonly IFolderPicker folderPicker;
+    private readonly FileService fileService;
     private readonly List<string> imagePaths = [];
     private int imageIndex = -1;
     private IDispatcherTimer? timer;
@@ -42,8 +41,8 @@ public partial class MainPageViewModel : BaseViewModel {
         set => SetField(ref field, value);
     } = string.Empty;
 
-    public MainPageViewModel(IFolderPicker folderPicker) {
-        this.folderPicker = folderPicker;
+    public MainPageViewModel(FileService fileService) {
+        this.fileService = fileService;
     }
 
     public void Loaded() {
@@ -121,9 +120,9 @@ public partial class MainPageViewModel : BaseViewModel {
         LoadImage(imageIndex = Random.Shared.Next(0, imagePaths.Count));
     }
 
-    private bool LoadImage(int index) {
-        if (index < 0 || index >= imagePaths.Count) return false;
-        return LoadImage(imagePaths[index]);
+    private void LoadImage(int index) {
+        if (index < 0 || index >= imagePaths.Count) return;
+        LoadImage(imagePaths[index]);
     }
 
     private bool LoadImage(string? path) {
@@ -189,7 +188,8 @@ public partial class MainPageViewModel : BaseViewModel {
     private async Task OpenSettingsPage() => await Shell.Current.GoToAsync($"///{nameof(SettingsPage)}");
 
     private async Task PickFolderAsync(CancellationToken cancellationToken) {
-        var result = await folderPicker.PickAsync(cancellationToken);
+        var initialPath = directoryInfo is { Exists: true } directory ? directory.FullName : string.Empty;
+        var result = await fileService.PickFolderAsync(initialPath, cancellationToken);
         if (result is { IsSuccessful: true, Folder.Path: not null }) {
             LoadDirectory(result.Folder.Path);
             if (!IsSubdirectory(directoryInfo, imageFileInfo?.Directory)) LoadImage(GetFirstImageFile()?.FullName);

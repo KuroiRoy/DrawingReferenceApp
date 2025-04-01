@@ -1,0 +1,74 @@
+﻿using System.Diagnostics;
+using System.Net;
+using System.Net.Http.Json;
+using Common;
+using CommunityToolkit.Maui.Storage;
+
+namespace ReferenceImages;
+
+public class FileService {
+    public static FileService Default { get; } = new(FolderPicker.Default);
+    
+    private readonly HttpClient httpClient = new();
+    private readonly IFolderPicker localFolderPicker;
+    private FileBrowserPage? networkFilePickerView;
+    private readonly FolderBrowserViewModel networkFolderPicker;
+    
+    public FileService(IFolderPicker localFolderPicker) {
+        this.localFolderPicker = localFolderPicker;
+        networkFolderPicker = new FolderBrowserViewModel(this);
+    }
+
+    public async Task<FolderPickerResult> PickFolderAsync(string initialPath, CancellationToken cancellationToken) {
+        var source = await Shell.Current.DisplayActionSheet(
+            "Select file from:", "Cancel", null, 
+            "Local", "Network");
+        
+        return source switch {
+            "Local" => await localFolderPicker.PickAsync(initialPath, cancellationToken),
+            "Network" => await PickNetworkFolderAsync(initialPath, cancellationToken),
+            _ => new FolderPickerResult(null, null)
+        };
+    }
+
+    public async Task<List<string>> GetFoldersAsync(string path, CancellationToken cancellationToken) {
+        var url = $"{Settings.Default.NetworkFileServerUrl}/api/files/list?path={WebUtility.UrlEncode(path)}&folders=1&files=0";
+        try {
+            var response = await httpClient.GetFromJsonAsync<FileListResponse>(url, cancellationToken);
+            return response?.Folders ?? [];
+        }
+        catch (HttpRequestException httpRequestException) {
+            var message = $"Failed to pick folder:\n{httpRequestException.Message}\nUrl: {url}";
+            Trace.WriteLine(message);
+            Helper.DisplayAlert(message);
+            return [];
+        }
+        catch (InvalidOperationException invalidOperationException) {
+            var message = $"Failed to pick folder:\n{invalidOperationException.Message}\nUrl: {url}";
+            Trace.WriteLine(message);
+            Helper.DisplayAlert(message);
+            return [];
+        }
+        catch (OperationCanceledException) {
+            return [];
+        }
+    }
+
+    public async Task DownloadFileAsync(string serverUrl, string filePath, string localPath)
+    {
+        var url = $"{serverUrl}/api/files/download?filePath={WebUtility.UrlEncode(filePath)}";
+        var response = await httpClient.GetAsync(url);
+
+        await using var stream = await response.Content.ReadAsStreamAsync();
+        await using var fileStream = File.Create(localPath);
+        await stream.CopyToAsync(fileStream);
+    }
+
+    private async Task<FolderPickerResult> PickNetworkFolderAsync(string initialPath, CancellationToken cancellationToken) {
+        var modalTask = Shell.Current.Navigation.PushModalAsync(networkFilePickerView ??= new FileBrowserPage(networkFolderPicker));
+        var pickTask = networkFolderPicker.PickAsync(initialPath, cancellationToken);
+        
+        await modalTask;
+        return await pickTask;
+    }
+}
