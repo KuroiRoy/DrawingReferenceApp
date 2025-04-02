@@ -28,7 +28,7 @@ jobs:
         run: dotnet restore
 
       - name: Build MAUI App
-        run: dotnet publish -f net9.0-windows10.0.19041.0 -c Release -o ./output/DrawingReferenceApp
+        run: dotnet publish ./ReferenceImages/ReferenceImages.csproj -f net9.0-windows10.0.19041.0 -c Release -o ./output/DrawingReferenceApp-Windows
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
